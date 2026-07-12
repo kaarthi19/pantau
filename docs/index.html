@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="600">
+<title>Pantau · research radar</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg:#faf8f4; --panel:#ffffff; --fg:#1c1b19; --muted:#6b6862;
+    --line:#e9e5dd; --line2:#f1ede5; --badge:#f3efe7; --shadow:0 1px 2px rgba(0,0,0,.04);
+    --accent:#ee7733;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#131211; --panel:#1c1b19; --fg:#eae7e1; --muted:#9a958c;
+      --line:#2b2926; --line2:#242320; --badge:#26241f; --shadow:0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  * { box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; }
+  body {
+    margin:0; background:var(--bg); color:var(--fg);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:740px; margin:0 auto; padding:0 18px 48px; }
+
+  /* header */
+  header {
+    position:sticky; top:0; z-index:5; background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:saturate(1.4) blur(8px); -webkit-backdrop-filter:saturate(1.4) blur(8px);
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 0 12px; margin-bottom:6px; border-bottom:1px solid var(--line);
+  }
+  .brand { display:flex; align-items:baseline; gap:9px; }
+  .brand h1 { margin:0; font-size:19px; font-weight:700; letter-spacing:-.01em; }
+  .brand .tag { color:var(--muted); font-size:12.5px; }
+  .stamp { color:var(--muted); font-size:11.5px; display:flex; align-items:center; gap:6px; white-space:nowrap; }
+  .dot { width:7px; height:7px; border-radius:50%; background:#2ca25f; box-shadow:0 0 0 0 rgba(44,162,95,.5); animation:pulse 2.4s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(44,162,95,.5)} 70%{box-shadow:0 0 0 6px rgba(44,162,95,0)} 100%{box-shadow:0 0 0 0 rgba(44,162,95,0)} }
+
+  /* legend */
+  .legend { display:flex; flex-wrap:wrap; gap:6px; padding:12px 0 4px; }
+  .lchip { font-size:11px; color:var(--muted); display:inline-flex; align-items:center; gap:5px; }
+  .lchip i { width:9px; height:9px; border-radius:3px; display:inline-block; }
+
+  /* section label */
+  .sec { display:flex; align-items:center; gap:9px; margin:26px 0 10px; }
+  .sec h2 { font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0; font-weight:600; }
+  .sec .rule { flex:1; height:1px; background:var(--line); }
+  .sec .count { font-size:11.5px; color:var(--muted); }
+
+  /* top picks */
+  .picks { display:grid; gap:10px; }
+  .card {
+    position:relative; background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:13px 15px 13px 17px; box-shadow:var(--shadow);
+    overflow:hidden; transition:border-color .15s, transform .15s;
+  }
+  .card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--c); }
+  .card:hover { border-color:color-mix(in srgb,var(--c) 55%,var(--line)); transform:translateY(-1px); }
+
+  /* rows */
+  .row {
+    position:relative; padding:12px 4px 12px 15px; border-bottom:1px solid var(--line2);
+    transition:background .12s;
+  }
+  .row::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:3px; border-radius:3px; background:var(--c); opacity:.85; }
+  .row:hover { background:var(--line2); }
+
+  .top { display:flex; align-items:flex-start; gap:11px; }
+  .score {
+    flex:none; min-width:34px; height:26px; padding:0 7px; border-radius:8px;
+    background:var(--badge); color:var(--fg); font-weight:700; font-size:13px;
+    font-variant-numeric:tabular-nums; display:flex; align-items:center; justify-content:center;
+  }
+  .score.hi { background:color-mix(in srgb,var(--c) 20%,var(--badge)); color:var(--c); box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 35%,transparent); }
+  .body { min-width:0; flex:1; }
+  a.title { color:var(--fg); text-decoration:none; font-weight:600; font-size:15px; line-height:1.35; display:inline-block; }
+  a.title:hover { text-decoration:underline; text-decoration-color:var(--c); }
+  .meta { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:4px; font-size:12px; color:var(--muted); }
+  .chip { color:#fff; font-size:10.5px; font-weight:600; padding:1.5px 7px; border-radius:20px; background:var(--c); letter-spacing:.01em; }
+  .sep { opacity:.45; }
+  .why { font-size:13px; color:var(--muted); margin-top:5px; line-height:1.45; }
+
+  .empty { color:var(--muted); font-size:14px; padding:14px 0; }
+  footer { margin-top:34px; padding-top:14px; border-top:1px solid var(--line); font-size:12px; color:var(--muted); line-height:1.7; }
+  footer .fail { color:#cc3311; }
+  footer code { background:var(--badge); padding:1px 5px; border-radius:5px; font-size:11px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><h1>Pantau</h1><span class="tag">research radar</span></div>
+    <div class="stamp"><span class="dot"></span>updated 2026-07-12 09:35 UTC</div>
+  </header>
+
+  
+  <div class="legend">
+    <span class="lchip"><i style="background:#0077BB"></i>Ch3 · GARUDA / Indonesia grid</span><span class="lchip"><i style="background:#33BBEE"></i>Ch4 · Power market reform</span><span class="lchip"><i style="background:#CC3311"></i>Captive coal · Nickel</span><span class="lchip"><i style="background:#009988"></i>ASEAN Power Grid</span><span class="lchip"><i style="background:#EE7733"></i>Stakeholder intel</span><span class="lchip"><i style="background:#EE3377"></i>Methods &amp; tools</span>
+  </div>
+  
+
+  
+
+  <div class="sec"><h2>Recent</h2><span class="rule"></span><span class="count">8 items</span></div>
+  
+  <div class="row" style="--c:#EE3377">
+    <div class="top">
+      <span class="score hi">10</span>
+      <div class="body">
+        <a class="title" href="https://arxiv.org/abs/2607.08102v1">Decomposition-Based QAOA for Maximum Coverage Location Problem in Satellite Constellation Design</a>
+        <div class="meta">
+          <span class="chip">Methods &amp; tools</span>
+          <span>arxiv</span>
+          <span class="sep">·</span>
+          <span class="ago" data-date="2026-07-09"></span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="row" style="--c:#EE3377">
+    <div class="top">
+      <span class="score hi">10</span>
+      <div class="body">
+        <a class="title" href="https://doi.org/10.1016/j.epsr.2026.113684">An efficient hybrid heuristic for the transmission expansion planning under uncertainty</a>
+        <div class="meta">
+          <span class="chip">Methods &amp; tools</span>
+          <span>openalex:transmission expansion decomposition</span>
+          <span class="sep">·</span>
+          <span class="ago" data-date="2026-07-08"></span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="row" style="--c:#EE3377">
+    <div class="top">
+      <span class="score hi">10</span>
+      <div class="body">
+        <a class="title" href="https://doi.org/10.71959/3m9d-jb61">Un enfoque de descomposición de Benders aplicado a la planificación de la expansión de la transmisión con reconfiguración de la red, utilizando factores de sensibilidad y evaluación implícita de multiplicadores</a>
+        <div class="meta">
+          <span class="chip">Methods &amp; tools</span>
+          <span>openalex:transmission expansion decomposition</span>
+          <span class="sep">·</span>
+          <span class="ago" data-date="2026-07-08"></span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="row" style="--c:#EE3377">
+    <div class="top">
+      <span class="score">6</span>
+      <div class="body">
+        <a class="title" href="https://arxiv.org/abs/2607.07904v1">Quantifying Implicit Overload Mandates in Phase Jump Requirements for Grid Forming Inverters</a>
+        <div class="meta">
+          <span class="chip">Methods &amp; tools</span>
+          <span>arxiv</span>
+          <span class="sep">·</span>
+          <span class="ago" data-date="2026-07-08"></span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="row" style="--c:#EE3377">
+    <div class="top">
+      <span class="score">6</span>
+      <div class="body">
+        <a class="title" href="https://arxiv.org/abs/2607.07899v1">Empirical Comparison of Unified Benders Cuts for Multi-Commodity Fixed-Charge Network Design</a>
+        <div class="meta">
+          <span class="chip">Methods &amp; tools</span>
+          <span>arxiv</span>
+          <span class="sep">·</span>
+          <span class="ago" data-date="2026-07-08"></span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="row" style="--c:#0077BB">
+    <div class="top">
+      <span class="score hi">9</span>
+      <div class="body">
+        <a class="title" href="https://doi.org/10.33322/x7zn4jhp">Advancing Indonesia&#39;s Energy Transition: a Preliminary Study on the Coal-to-Nuclear (C2N) Conversion Approach</a>
+        <div class="meta">
+          <span class="chip">Ch3 · GARUDA / Indonesia grid</span>
+          <span>openalex:Indonesia power system planning</span>
+          <span class="sep">·</span>
+          <span class="ago" data-date="2026-07-07"></span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="row" style="--c:#EE3377">
+    <div class="top">
+      <span class="score">7</span>
+      <div class="body">
+        <a class="title" href="https://doi.org/10.33322/c9rw4hjt">Optimization of GEPP Power Output through Enhancement of the CNG Supply System:  A Case Study at Bangkanai Power Plant</a>
+        <div class="meta">
+          <span class="chip">Methods &amp; tools</span>
+          <span>openalex:Indonesia power system planning</span>
+          <span class="sep">·</span>
+          <span class="ago" data-date="2026-07-07"></span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <div class="row" style="--c:#EE3377">
+    <div class="top">
+      <span class="score">6</span>
+      <div class="body">
+        <a class="title" href="https://doi.org/10.1016/j.apenergy.2026.128328">Coordinated transmission-distribution load restoration under N-k contingencies: a distributed optimization and reinforcement learning approach</a>
+        <div class="meta">
+          <span class="chip">Methods &amp; tools</span>
+          <span>openalex:issn:0306-2619</span>
+          <span class="sep">·</span>
+          <span class="ago" data-date="2026-07-06"></span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+
+  <footer>
+    8 items · scorer: <code>keyword</code>
+    
+    <br>Research track only — jobs surface through email.
+  </footer>
+</div>
+<script>
+  for (const el of document.querySelectorAll('.ago')) {
+    const raw = el.dataset.date; if (!raw) continue;
+    const d = new Date(raw.length <= 10 ? raw + 'T00:00:00Z' : raw);
+    if (isNaN(d)) continue;
+    const days = Math.floor((Date.now() - d) / 86400000);
+    el.textContent = days <= 0 ? 'today' : days === 1 ? '1 day ago' : days + ' days ago';
+  }
+</script>
+</body>
+</html>
