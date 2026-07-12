@@ -85,6 +85,7 @@ def build_context(conn, cfg: dict) -> dict:
         }
 
     failures = _source_failures(conn)
+    workstreams = [{"label": m["label"], "color": m["color"]} for m in tags.values()]
     return {
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "top_picks": [shape(r) for r in top],
@@ -92,6 +93,7 @@ def build_context(conn, cfg: dict) -> dict:
         "total": len(listing),
         "scorer_mode": _latest_scorer(conn),
         "failures": failures,
+        "workstreams": workstreams,
     }
 
 
