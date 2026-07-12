@@ -1,0 +1,26 @@
+name: pipeline
+on:
+  schedule: [{cron: "17 */4 * * *"}]   # every 4h; expect jitter on public runners
+  workflow_dispatch: {}
+concurrency: {group: pipeline, cancel-in-progress: false}
+permissions: {contents: write}
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -r requirements.txt
+      - run: python -m pantau.run
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DIGEST_SMTP_USER: ${{ secrets.DIGEST_SMTP_USER }}
+          DIGEST_SMTP_PASS: ${{ secrets.DIGEST_SMTP_PASS }}
+      - name: Commit state
+        run: |
+          git config user.name  "pantau-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/pantau.db docs/
+          git diff --cached --quiet || git commit -m "pipeline run [skip ci]"
+          git push

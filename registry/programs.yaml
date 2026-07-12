@@ -1,0 +1,28 @@
+# Jobs Tier-0: fixed-cycle programs + announcement-driven programs.
+#   * cycle programs      -> get an .ics entry (make ics), imported manually.
+#   * announcement-driven -> get a watch_url polled by pagewatch each run.
+# Verify dates + citizenship eligibility in Phase 0-J; log-and-exclude the
+# citizenship-gated ones so they aren't re-researched.
+
+tier0:
+  # --- fixed-cycle (calendar) ------------------------------------------------
+  - {name: "World Bank Young Professionals Program", cycle_month: 9, ics: true,
+     note: "annual; open to non-US nationals. VERIFY dates + eligibility."}
+  - {name: "ADB Young Professionals Program", cycle_month: 10, ics: true,
+     note: "annual; ADB member-country nationals. VERIFY."}
+  - {name: "IIASA Young Scientists Summer Program", cycle_month: 1, ics: true,
+     note: "designed for PhD students; realistic summer-2027 slot. VERIFY deadline."}
+  - {name: "Schmidt Science Fellows", cycle_month: 7, ics: true,
+     note: "UNIVERSITY-NOMINATED — real deadline is UCSD's internal nomination date; FIND IT."}
+  - {name: "Breakthrough Energy Fellows", cycle_month: 3, ics: true,
+     note: "VERIFY cycle + work-authorization eligibility."}
+  - {name: "IIASA / Belfer ENRP pre/postdoc", cycle_month: 12, ics: true,
+     note: "Harvard Belfer ENRP fellowship cycle. VERIFY."}
+
+  # --- announcement-driven (pagewatch) --------------------------------------
+  - {name: "Climate Breakthrough Scout", org: "Climate Breakthrough",
+     watch_url: "https://www.climatebreakthrough.org/", note: "VERIFY watch URL (announcements page)"}
+
+# Known citizenship-gated — log and exclude, verify once then never again:
+#   AAAS STPF, PMF, CFR IAF, TechCongress, Horizon Fellowship (verify auth).
+# Auto-exclude, citizenship-required: MCC, DFC.

@@ -1,0 +1,100 @@
+# Research-track sources + keyword lists for both tracks.
+# Verification status and dates live in SOURCES.md. Endpoints marked VERIFY
+# still need a live check before you rely on them.
+
+research:
+  openalex:
+    # mailto is supplied by the pipeline (pantau contact address).
+    queries:
+      - "Indonesia power system planning"
+      - "captive coal nickel smelter electricity"
+      - "ASEAN power grid interconnection"
+      - "capacity expansion planning Southeast Asia"
+      - "electricity market reform Vietnam Indonesia"
+      - "transmission expansion decomposition"
+    issns:
+      - "0301-4215"   # Energy Policy — VERIFIED (ISSN filter syntax confirmed)
+      - "0306-2619"   # Applied Energy — VERIFY
+      - "0140-9883"   # Energy Economics — VERIFY
+      - "0885-8950"   # IEEE Trans. Power Systems — VERIFY
+    authors: []       # optional OpenAlex author IDs (Phase 0-R, §4-R.5)
+
+  arxiv:
+    categories: [eess.SY, math.OC, econ.GN]
+    terms: []         # optional free-text AND-terms
+
+  gnews:
+    queries:
+      - "Indonesia PLN power grid"
+      - "captive coal nickel Indonesia"
+      - "ASEAN power grid interconnection"
+      - "Vietnam PDP8 electricity"
+      - "Southeast Asia energy transition JETP"
+
+  # Generic RSS/Atom org feeds — all VERIFIED live 2026-07-12 unless noted.
+  feeds:
+    - {name: IESR, url: "https://iesr.or.id/feed", track: research, source_type: org}
+    - {name: "Carbon Brief", url: "https://www.carbonbrief.org/feed/", track: research, source_type: org}
+    - {name: "Mongabay", url: "https://news.mongabay.com/feed/", track: research, source_type: org}
+    - {name: "Mongabay Indonesia", url: "https://www.mongabay.co.id/feed/", track: research, source_type: org}
+    - {name: "ADB", url: "https://www.adb.org/rss.xml", track: research, source_type: org}
+    - {name: "Zero Carbon Analytics", url: "https://zerocarbon-analytics.org/feed/", track: research, source_type: org}
+    # Bot-blocked (Cloudflare / 429) — need a headless fetch, disabled for now:
+    #   Ember       https://ember-energy.org/feed/        (Cloudflare JS challenge)
+    #   IEEFA       https://ieefa.org/feed                (Cloudflare JS challenge)
+    #   TransitionZero  https://transitionzero.org/feed   (429 bot block)
+    # No discoverable feed: Global Energy Monitor, Reccessary.
+
+jobs:
+  # Tier-2 aggregators (digest-only). Verify each feed/alert path in Phase 0-J.
+  aggregators: []
+  # Climatebase / Idealist / 80,000 Hours / Devex expose email alerts or
+  # JS-rendered boards, not clean RSS — routed to the Phase-2 IMAP module.
+  # Add any that publish a real feed here as {name, url, track: jobs,
+  # source_type: aggregator, tier: 2}.
+
+# --- keyword lists: prefilter gating + $0 keyword scoring -------------------
+keywords:
+  research:
+    topic: [power system, power sector, electricity, grid, transmission,
+            dispatch, capacity expansion, unit commitment, renewable, solar,
+            wind, coal, captive, smelter, nickel, interconnection, tariff,
+            unbundling, decarbonization, energy transition, PLN, RUPTL, PDP8,
+            MILP, optimization, JuMP]
+    region: [indonesia, vietnam, malaysia, singapore, philippines, asean,
+             southeast asia, emerging asia, java, sumatra, sulawesi, kalimantan,
+             china, india]
+    exclude: [horoscope, celebrity, recipe, football, cryptocurrency]
+    tags:
+      ch3-garuda: [pln, ruptl, java-bali, sumatra, sulawesi, kalimantan,
+                   inter-island, super grid, indonesia grid, indonesia power]
+      ch4-reform: [market reform, unbundling, dispatch reform, tariff, pricing,
+                   regulator, pdp8, discom, provincial pilot, electricity market]
+      captive-coal: [captive, captive coal, nickel, smelter, imip, iwip,
+                     industrial park, industrial ppa, off-grid industrial]
+      apg-regional: [asean power grid, ltms, subsea cable, interconnector,
+                     cross-border, singapore import, bilateral]
+      stakeholder: [pln, memr, esdm, evn, moit, tnb, jetp, etp, adb energy,
+                    iesr, wri, appointed, leadership, budget]
+      methods: [unit commitment, expansion planning, decomposition, benders,
+                stochastic, open model, optimization, milp, julia, jump, solver]
+
+  jobs:
+    topic: [climate, energy, power, grid, electricity, clean energy,
+            energy transition, decarbonization, philanthropy, foundation,
+            program officer, program associate, research analyst, fellowship,
+            fellow, scout, intermediary, policy, analyst, portfolio]
+    exclude: [cashier, warehouse, barista, driver]
+    tags:
+      philanthropy: [foundation, philanthropy, grantmaking, program officer,
+                     program associate, portfolio, funder, regrantor]
+      intermediary: [rmi, cpi, climate policy initiative, intermediary,
+                     research analyst, energy innovation, think tank]
+      mdb: [world bank, ifc, adb, aiib, young professionals, ypp,
+            development finance, mdb, multilateral]
+      fellowship: [fellowship, fellow, scout, cohort, residency, program,
+                   early-career]
+      policy-org: [policy, regulatory, advocacy, government affairs]
+      academic: [postdoc, postdoctoral, research associate, university,
+                 lab, laboratory, phd]
+      industry: [engineer, software, developer, sales, consulting firm]

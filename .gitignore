@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.DS_Store
+# NOTE: data/pantau.db and docs/index.html ARE committed (by pantau-bot) —
+# do not ignore them. Committing state keeps the scheduled workflow alive.

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="600">
+<title>Pantau · research radar</title>
+<style>
+  :root { color-scheme: light dark; --bg:#fbfbf9; --fg:#1a1a1a; --muted:#666;
+          --card:#fff; --line:#e6e6e0; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141414; --fg:#e8e8e8; --muted:#999; --card:#1e1e1e; --line:#2c2c2c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5
+         -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  .wrap { max-width:720px; margin:0 auto; padding:16px; }
+  header { display:flex; justify-content:space-between; align-items:baseline;
+           border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:14px; }
+  h1 { font-size:18px; margin:0; }
+  .sub { color:var(--muted); font-size:12px; }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.05em;
+       color:var(--muted); margin:22px 0 8px; }
+  .item { padding:10px 0; border-bottom:1px solid var(--line); }
+  .item a { color:var(--fg); text-decoration:none; font-weight:600; }
+  .item a:hover { text-decoration:underline; }
+  .meta { font-size:12px; color:var(--muted); margin-top:3px; display:flex;
+          gap:8px; flex-wrap:wrap; align-items:center; }
+  .chip { display:inline-block; padding:1px 7px; border-radius:10px; color:#fff;
+          font-size:11px; font-weight:600; }
+  .score { font-variant-numeric:tabular-nums; font-weight:700; }
+  .why { font-size:13px; color:var(--muted); margin-top:3px; }
+  .top { background:var(--card); border:1px solid var(--line); border-radius:10px;
+         padding:4px 14px; }
+  footer { margin-top:26px; padding-top:12px; border-top:1px solid var(--line);
+           font-size:12px; color:var(--muted); }
+  .fail { color:#cc3311; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Pantau · research radar</h1>
+    <span class="sub">updated {{ updated_at }}</span>
+  </header>
+
+  {% if top_picks %}
+  <h2>Top picks · 48h</h2>
+  <div class="top">
+    {% for it in top_picks %}
+    <div class="item">
+      <a href="{{ it.url }}">{{ it.title }}</a>
+      <div class="meta">
+        <span class="chip" style="background:{{ it.tag_color }}">{{ it.tag_label }}</span>
+        <span class="score">{{ it.score }}/10</span>
+        <span>{{ it.source }}</span>
+        <span class="ago" data-date="{{ it.date }}"></span>
+      </div>
+      {% if it.why %}<div class="why">{{ it.why }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <h2>Recent · {{ total }} items</h2>
+  {% for it in items %}
+  <div class="item">
+    <a href="{{ it.url }}">{{ it.title }}</a>
+    <div class="meta">
+      <span class="chip" style="background:{{ it.tag_color }}">{{ it.tag_label }}</span>
+      <span class="score">{{ it.score }}/10</span>
+      <span>{{ it.source }}</span>
+      <span class="ago" data-date="{{ it.date }}"></span>
+    </div>
+    {% if it.why %}<div class="why">{{ it.why }}</div>{% endif %}
+  </div>
+  {% else %}
+  <p class="sub">No research items above threshold yet.</p>
+  {% endfor %}
+
+  <footer>
+    {{ total }} items · scorer: {{ scorer_mode }}
+    {% if failures %}<br><span class="fail">source failures: {{ failures|join(", ") }}</span>{% endif %}
+    <br>Research track only — jobs surface through email.
+  </footer>
+</div>
+<script>
+  // Relative time labels, computed client-side from ISO/date strings.
+  for (const el of document.querySelectorAll('.ago')) {
+    const raw = el.dataset.date; if (!raw) continue;
+    const d = new Date(raw.length <= 10 ? raw + 'T00:00:00Z' : raw);
+    if (isNaN(d)) continue;
+    const days = Math.floor((Date.now() - d) / 86400000);
+    el.textContent = days <= 0 ? 'today' : days === 1 ? '1 day ago' : days + ' days ago';
+  }
+</script>
+</body>
+</html>

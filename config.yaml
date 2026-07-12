@@ -1,0 +1,47 @@
+project: pantau
+window_days: 7            # collectors ignore items older than this
+render_days: 14          # dashboard shows research items from this window
+
+scoring:
+  mode: haiku            # haiku | keyword (auto-falls back to keyword if no ANTHROPIC_API_KEY)
+  model: claude-haiku-4-5
+  batch_size: 20
+  max_llm_items_per_run: 150
+
+tracks:
+  research:
+    prompt: prompts/research.md
+    show_threshold: 6
+    highlight_threshold: 8
+    tags:
+      ch3-garuda:   {label: "Ch3 · GARUDA / Indonesia grid", color: "#0077BB"}
+      ch4-reform:   {label: "Ch4 · Power market reform",     color: "#33BBEE"}
+      captive-coal: {label: "Captive coal · Nickel",         color: "#CC3311"}
+      apg-regional: {label: "ASEAN Power Grid",              color: "#009988"}
+      stakeholder:  {label: "Stakeholder intel",             color: "#EE7733"}
+      methods:      {label: "Methods & tools",               color: "#EE3377"}
+  jobs:
+    prompt: prompts/jobs.md
+    show_threshold: 6            # Tier-2 digest inclusion floor
+    alert_threshold: 7          # immediate email for Tier-0/1 items at/above this
+    tier1_always_in_digest: true
+    tags: [philanthropy, intermediary, mdb, fellowship, policy-org, academic, industry]
+
+digest:
+  enabled: true
+  send_hour_utc: 0              # once/UTC day at first run >= this hour (00:17 ~ 07:17 Bangkok / 17:17 PT)
+  recipient: SET_ME@ucsd.edu
+  synthesis: none              # none | sonnet
+  synthesis_model: claude-sonnet-4-6
+
+alerts:
+  enabled: true
+  max_per_run: 3               # guards against a bulk-import flood
+
+sweep:                          # monthly agentic fellowship hunt
+  enabled: true
+  model: claude-sonnet-4-6
+  max_web_searches: 8
+
+prune:
+  keep_days: 180               # rows below show_threshold older than this are pruned
