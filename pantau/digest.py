@@ -57,12 +57,14 @@ def build(conn, cfg: dict) -> dict | None:
         "AND score >= ? AND fetched_at >= ? ORDER BY score DESC", (show_j, since),
     ).fetchall()
     research = conn.execute(
-        "SELECT * FROM items WHERE track='research' AND score >= ? "
-        "AND fetched_at >= ? ORDER BY score DESC", (show_r, since),
+        "SELECT * FROM items WHERE track='research' AND score >= ? AND fetched_at >= ? "
+        "AND (source IS NULL OR source NOT LIKE 'library%') ORDER BY score DESC",
+        (show_r, since),
     ).fetchall()
+    library = _library_shortlist(conn, cfg)
 
     n_jobs = len(tier01) + len(tier2)
-    n_research = len(research)
+    n_research = len(research) + len(library)
     if n_jobs == 0 and n_research == 0:
         return None
 
@@ -87,6 +89,8 @@ def build(conn, cfg: dict) -> dict | None:
         "tier01": [_shape_job(r) for r in tier01],
         "tier2": [_shape_job(r) for r in tier2],
         "research_groups": groups,
+        "library": library,
+        "library_label": f"From your library · top {len(library)}" if library else "",
         "synthesis": synthesis,
         "failures": store.recent_source_failures(conn, streak=3),
         "subject": f"Pantau — {n_jobs} jobs · {n_research} research · {date}",
@@ -108,6 +112,22 @@ def _shape_research(r) -> dict:
         "title": r["title"] or "", "url": r["url"] or "",
         "source": r["source"] or "", "score": r["score"], "why": r["rationale"] or "",
     }
+
+
+def _library_shortlist(conn, cfg: dict) -> list[dict]:
+    """Top-N library-sourced research papers from the most recent weekly sweep."""
+    lib_cfg = cfg.get("library", {})
+    if not lib_cfg.get("enabled"):
+        return []
+    top_n = int(lib_cfg.get("top_n", 30))
+    window_days = int(lib_cfg.get("every_days", 7)) + 3
+    since = (datetime.now(timezone.utc) - timedelta(days=window_days)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    show_r = cfg["tracks"]["research"]["show_threshold"]
+    rows = conn.execute(
+        "SELECT * FROM items WHERE track='research' AND source LIKE 'library%' "
+        "AND score >= ? AND fetched_at >= ? ORDER BY score DESC LIMIT ?",
+        (show_r, since, top_n)).fetchall()
+    return [_shape_research(r) for r in rows]
 
 
 def _deadline_label(deadline: str | None) -> str:
@@ -155,6 +175,12 @@ def _text(ctx: dict) -> str:
             dl = f" · {j['deadline']}" if j["deadline"] else ""
             out.append(f"[{j['score']}] {j['title']} — {j['org']} ({j['location']})"
                        f" · visa:{j['visa']}{dl}\n    {j['why']}\n    {j['url']}")
+        out.append("")
+    if ctx.get("library"):
+        out.append(f"== {ctx['library_label']} ==")
+        for it in ctx["library"]:
+            out.append(f"[{it['score']}] {it['title']} — {it['source']}\n"
+                       f"    {it['why']}\n    {it['url']}")
         out.append("")
     for g in ctx["research_groups"]:
         out.append(f"== {g['label']} ==")

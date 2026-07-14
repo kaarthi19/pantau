@@ -25,6 +25,19 @@
   {% endfor %}
   {% endif %}
 
+  {% if library %}
+  <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.05em;
+             color:#7733aa;border-bottom:2px solid #7733aa;padding-bottom:4px;
+             margin-top:20px">📚 {{ library_label }}</h2>
+  {% for it in library %}
+  <div style="padding:9px 0;border-bottom:1px solid #f0f0f0">
+    <a href="{{ it.url }}" style="color:#1a1a1a;font-weight:600;text-decoration:none">{{ it.title }}</a>
+    <div style="font-size:12px;color:#666;margin-top:2px"><b>{{ it.score }}/10</b> · {{ it.source }}</div>
+    {% if it.why %}<div style="font-size:13px;color:#555;margin-top:2px">{{ it.why }}</div>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
   {% for g in research_groups %}
   <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.05em;
              color:{{ g.color }};border-bottom:1px solid #eee;padding-bottom:4px;

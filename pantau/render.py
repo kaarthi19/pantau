@@ -52,15 +52,19 @@ def build_context(conn, cfg: dict) -> dict:
     cutoff = (datetime.now(timezone.utc) - timedelta(days=render_days)).strftime("%Y-%m-%dT%H:%M:%SZ")
     top_cutoff = (datetime.now(timezone.utc) - timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+    # Library-seeded items are personal (they reveal your reading focus), so they
+    # stay in the private email digest and never render on the public dashboard.
     listing = conn.execute(
         "SELECT * FROM items WHERE track='research' AND score >= ? "
         "AND COALESCE(published_at, fetched_at) >= ? "
+        "AND (source IS NULL OR source NOT LIKE 'library%') "
         "ORDER BY COALESCE(published_at, fetched_at) DESC, score DESC LIMIT 300",
         (show, cutoff),
     ).fetchall()
     top = conn.execute(
         "SELECT * FROM items WHERE track='research' AND score >= ? "
         "AND COALESCE(published_at, fetched_at) >= ? "
+        "AND (source IS NULL OR source NOT LIKE 'library%') "
         "ORDER BY score DESC, COALESCE(published_at, fetched_at) DESC LIMIT 8",
         (highlight, top_cutoff),
     ).fetchall()

@@ -78,7 +78,17 @@ email skipped. The whole system is buildable and testable with no keys.
 - **Resilience.** A failing source logs and continues. A Tier-1 source failing 3
   consecutive runs gets one line in the digest/dashboard footer
   (`check {org} board`) rather than dying silently.
-- **Cost.** ~$3–5/month with Haiku scoring; $0 in keyword mode.
+- **Library seeding (opt-in, research track).** Point `config.yaml → library` at
+  your Zotero library and once a week the radar surfaces recent papers that
+  **cite your library** or are **by the authors you read most** — a *From your
+  library · top N* section in the digest. Use `source: zotero_api` (fetches from
+  zotero.org via a read-only key in the `ZOTERO_API_KEY` secret + your numeric
+  `zotero_library_id`) or `source: bib` (a local `library/zotero.bib`). Only DOIs
+  are sent to OpenAlex; the library/`.bib` is git-ignored. These items are
+  **email-only** — they never render on the public dashboard (they reveal your
+  reading focus).
+- **Cost.** ~$3–5/month with Haiku scoring; $0 in keyword mode. OpenAlex/arXiv/
+  Google News/RSS/**Zotero** are all free; only Claude scoring uses paid API credits.
 
 ## Layout
 

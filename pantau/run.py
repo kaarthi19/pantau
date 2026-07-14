@@ -16,12 +16,13 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from datetime import datetime, timezone
 
 import yaml
 
 from . import store, filter as flt, render as render_mod, alert as alert_mod, digest as digest_mod
 from .net import PoliteSession, CONTACT_EMAIL
-from .collectors import openalex, arxiv, gnews, rss, ats, pagewatch, sweep
+from .collectors import openalex, arxiv, gnews, rss, ats, pagewatch, sweep, library
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -45,6 +46,22 @@ def load_all(config_path: str) -> dict:
 
 
 # --- collection -------------------------------------------------------------
+
+def _library_due(conn, lib_cfg: dict) -> bool:
+    """Library seeding runs at most every `every_days` (default 7) — a weekly
+    shortlist, not a per-run job. conn=None (dry-run) always runs."""
+    if conn is None:
+        return True
+    every = int(lib_cfg.get("every_days", 7))
+    last = store.get_meta(conn, "last_library_run")
+    if not last:
+        return True
+    try:
+        last_dt = datetime.strptime(last[:10], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except ValueError:
+        return True
+    return (datetime.now(timezone.utc) - last_dt).days >= every
+
 
 def collect_all(reg: dict, conn, window_days: int) -> tuple[list[dict], list[tuple]]:
     """Return (items, run_records). run_records = (source, count, ok, note)."""
@@ -96,6 +113,13 @@ def collect_all(reg: dict, conn, window_days: int) -> tuple[list[dict], list[tup
     items.extend(pw_items)
     for name, ok, note in pw_records:
         records.append((name, 0, ok, note))
+
+    # research: weekly library-seeded discovery (Zotero) -> research-track items
+    lib_cfg = reg["cfg"].get("library", {})
+    if lib_cfg.get("enabled") and _library_due(conn, lib_cfg):
+        guarded("library", lambda: library.collect(sess, lib_cfg, CONTACT_EMAIL))
+        if conn is not None:
+            store.set_meta(conn, "last_library_run", store.now_iso())
 
     return items, records
 

@@ -17,6 +17,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           DIGEST_SMTP_USER: ${{ secrets.DIGEST_SMTP_USER }}
           DIGEST_SMTP_PASS: ${{ secrets.DIGEST_SMTP_PASS }}
+          ZOTERO_API_KEY: ${{ secrets.ZOTERO_API_KEY }}   # read-only; for library.source=zotero_api
       - name: Commit state
         run: |
           git config user.name  "pantau-bot"

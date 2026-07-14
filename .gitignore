@@ -6,3 +6,7 @@ venv/
 .DS_Store
 # NOTE: data/pantau.db and docs/index.html ARE committed (by pantau-bot) —
 # do not ignore them. Committing state keeps the scheduled workflow alive.
+
+# Zotero library is a PRIVATE local input — never commit it.
+library/*.bib
+library/*.json

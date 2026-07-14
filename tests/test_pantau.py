@@ -15,7 +15,7 @@ FIX = os.path.join(ROOT, "tests", "fixtures")
 
 from pantau import store, filter as flt, render, alert, digest
 from pantau.net import normalize_url, normalize_title
-from pantau.collectors import ats, pagewatch, sweep
+from pantau.collectors import ats, pagewatch, sweep, library
 
 
 # --- fakes -----------------------------------------------------------------
@@ -255,3 +255,63 @@ def test_alert_first_run_suppresses(monkeypatch):
     assert res["sent"] == 0
     row = conn.execute("SELECT alerted_at FROM items WHERE id=?", (jid,)).fetchone()
     assert row["alerted_at"] is not None  # suppressed but marked
+
+
+# --- library seeding (Zotero) ----------------------------------------------
+
+class _ZoteroSession:
+    """Serves one page of Zotero items then stops (short page = end)."""
+    def get(self, url, **kw):
+        return FakeResp(payload=[
+            {"data": {"itemType": "journalArticle", "DOI": "10.1/AAA"}},
+            {"data": {"DOI": ""}},                                  # no DOI
+            {"data": {"extra": "DOI: 10.1/bbb"}},                   # DOI in extra
+        ])
+
+
+def test_library_parse_dois(tmp_path):
+    bib = tmp_path / "lib.bib"
+    bib.write_text('@article{a, doi = {10.1016/J.X.2020.1}}\n'
+                   '@article{b, doi={https://doi.org/10.1109/Y.2}}\n'
+                   '@article{c, doi={10.1016/j.x.2020.1}}\n', encoding="utf-8")
+    assert library.parse_dois(str(bib)) == ["10.1016/j.x.2020.1", "10.1109/y.2"]
+
+
+def test_library_zotero_dois_reads_extra_and_dedupes():
+    dois = library.zotero_dois(_ZoteroSession(),
+                               {"zotero_library_id": "13100523", "zotero_library_type": "user"})
+    assert dois == ["10.1/aaa", "10.1/bbb"]
+
+
+def test_library_zotero_noop_without_id():
+    assert library.zotero_dois(_ZoteroSession(), {"zotero_library_id": "SET_ME"}) == []
+
+
+def test_library_digest_section_and_no_group_dupe():
+    conn = store.connect(":memory:")
+    cfg = sample_cfg()
+    cfg["library"]["enabled"] = True
+    store.upsert_items(conn, [{"track": "research", "title": "Cites-your-library paper",
+                               "url": "https://l/1", "source": "library: cites your library",
+                               "source_type": "paper", "published_at": "2026-07-14"}])
+    lid = store.compute_id({"url": "https://l/1"})
+    store.apply_score(conn, lid, 9, "methods", "why", None, "keyword")
+    ctx = digest.build(conn, cfg)
+    assert ctx and ctx["library"] and ctx["library"][0]["title"].startswith("Cites")
+    grouped = [it["title"] for g in ctx["research_groups"] for it in g["entries"]]
+    assert "Cites-your-library paper" not in grouped  # not double-listed
+
+
+def test_dashboard_excludes_library_items(tmp_path):
+    conn = store.connect(":memory:")
+    store.upsert_items(conn, [
+        {"track": "research", "title": "Public arxiv paper", "url": "https://r/1",
+         "source": "arxiv", "source_type": "paper", "published_at": "2026-07-14"},
+        {"track": "research", "title": "MY-LIBRARY-only paper", "url": "https://r/2",
+         "source": "library: cites your library", "source_type": "paper",
+         "published_at": "2026-07-14"}])
+    for u, tag in (("https://r/1", "methods"), ("https://r/2", "methods")):
+        store.apply_score(conn, store.compute_id({"url": u}), 9, tag, "why", None, "keyword")
+    html = open(render.render(conn, sample_cfg(), str(tmp_path / "index.html")), encoding="utf-8").read()
+    assert "Public arxiv paper" in html
+    assert "MY-LIBRARY-only paper" not in html   # library items are digest-only
