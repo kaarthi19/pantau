@@ -1,0 +1,61 @@
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+            max-width:640px;margin:0 auto;color:#1a1a1a;line-height:1.5">
+  <h1 style="font-size:19px;margin:0 0 2px">Pantau digest</h1>
+  <p style="color:#666;font-size:13px;margin:0 0 16px">
+    {{ date }} · {{ n_jobs }} jobs · {{ n_research }} research</p>
+
+  {% if synthesis %}
+  <p style="background:#f4f1ea;border-left:3px solid #ee7733;padding:10px 12px;
+            border-radius:4px;font-size:14px;margin:0 0 18px">{{ synthesis }}</p>
+  {% endif %}
+
+  {% if tier01 or tier2 %}
+  <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#888;
+             border-bottom:1px solid #eee;padding-bottom:4px">Jobs</h2>
+  {% for j in tier01 + tier2 %}
+  <div style="padding:9px 0;border-bottom:1px solid #f0f0f0">
+    <a href="{{ j.url }}" style="color:#1a1a1a;font-weight:600;text-decoration:none">
+      {{ j.title }}</a>
+    <div style="font-size:12px;color:#666;margin-top:2px">
+      <b>{{ j.score }}/10</b> · {{ j.org }}{% if j.location %} · {{ j.location }}{% endif %}
+      · tier {{ j.tier }} · visa: {{ j.visa }}{% if j.deadline %} · {{ j.deadline }}{% endif %}
+    </div>
+    {% if j.why %}<div style="font-size:13px;color:#555;margin-top:2px">{{ j.why }}</div>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if library %}
+  <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.05em;
+             color:#7733aa;border-bottom:2px solid #7733aa;padding-bottom:4px;
+             margin-top:20px">📚 {{ library_label }}</h2>
+  {% for it in library %}
+  <div style="padding:9px 0;border-bottom:1px solid #f0f0f0">
+    <a href="{{ it.url }}" style="color:#1a1a1a;font-weight:600;text-decoration:none">{{ it.title }}</a>
+    <div style="font-size:12px;color:#666;margin-top:2px"><b>{{ it.score }}/10</b> · {{ it.source }}</div>
+    {% if it.why %}<div style="font-size:13px;color:#555;margin-top:2px">{{ it.why }}</div>{% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  {% for g in research_groups %}
+  <h2 style="font-size:13px;text-transform:uppercase;letter-spacing:.05em;
+             color:{{ g.color }};border-bottom:1px solid #eee;padding-bottom:4px;
+             margin-top:20px">{{ g.label }}</h2>
+  {% for it in g.entries %}
+  <div style="padding:9px 0;border-bottom:1px solid #f0f0f0">
+    <a href="{{ it.url }}" style="color:#1a1a1a;font-weight:600;text-decoration:none">
+      {{ it.title }}</a>
+    <div style="font-size:12px;color:#666;margin-top:2px"><b>{{ it.score }}/10</b> · {{ it.source }}</div>
+    {% if it.why %}<div style="font-size:13px;color:#555;margin-top:2px">{{ it.why }}</div>{% endif %}
+  </div>
+  {% endfor %}
+  {% endfor %}
+
+  {% if failures %}
+  <p style="color:#cc3311;font-size:12px;margin-top:18px">
+    Source failures (3 consecutive runs): {{ failures|join(", ") }}</p>
+  {% endif %}
+  <p style="color:#aaa;font-size:11px;margin-top:16px">
+    Pantau · private research + career radar</p>
+</div>

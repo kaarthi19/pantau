@@ -1,0 +1,19 @@
+[
+  {
+    "id": "c84ff844edb5",
+    "friendly_id": "c84ff844edb5-chief-of-development",
+    "name": "Chief of Development",
+    "url": "https://clean-air-task-force.breezy.hr/p/c84ff844edb5-chief-of-development",
+    "published_date": "2026-06-22T14:28:13.746Z",
+    "type": {"id": "fullTime", "name": "Full-Time"},
+    "location": {
+      "country": {"name": "United States", "id": "US"},
+      "primary": true,
+      "is_remote": true,
+      "name": "United States",
+      "id": "d377ed5fb031"
+    },
+    "department": "Development",
+    "description": "<p>Lead fundraising for clean air and energy policy work.</p>"
+  }
+]

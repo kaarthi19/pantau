@@ -1,0 +1,77 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//pantau//tier0//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:pantau-0-20260901@pantau
+DTSTAMP:20260712T083427Z
+DTSTART;VALUE=DATE:20260901
+SUMMARY:World Bank Young Professionals Program — cycle window opens
+DESCRIPTION:annual; open to non-US nationals. VERIFY dates + eligibility.
+BEGIN:VALARM
+TRIGGER:-P14D
+ACTION:DISPLAY
+DESCRIPTION:World Bank Young Professionals Program deadline approaching (~14 days)
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:pantau-1-20261001@pantau
+DTSTAMP:20260712T083427Z
+DTSTART;VALUE=DATE:20261001
+SUMMARY:ADB Young Professionals Program — cycle window opens
+DESCRIPTION:annual; ADB member-country nationals. VERIFY.
+BEGIN:VALARM
+TRIGGER:-P14D
+ACTION:DISPLAY
+DESCRIPTION:ADB Young Professionals Program deadline approaching (~14 days)
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:pantau-2-20270101@pantau
+DTSTAMP:20260712T083427Z
+DTSTART;VALUE=DATE:20270101
+SUMMARY:IIASA Young Scientists Summer Program — cycle window opens
+DESCRIPTION:designed for PhD students; realistic summer-2027 slot. VERIFY deadline.
+BEGIN:VALARM
+TRIGGER:-P14D
+ACTION:DISPLAY
+DESCRIPTION:IIASA Young Scientists Summer Program deadline approaching (~14 days)
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:pantau-3-20260701@pantau
+DTSTAMP:20260712T083427Z
+DTSTART;VALUE=DATE:20260701
+SUMMARY:Schmidt Science Fellows — cycle window opens
+DESCRIPTION:UNIVERSITY-NOMINATED — real deadline is UCSD's internal nomination date; FIND IT.
+BEGIN:VALARM
+TRIGGER:-P14D
+ACTION:DISPLAY
+DESCRIPTION:Schmidt Science Fellows deadline approaching (~14 days)
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:pantau-4-20270301@pantau
+DTSTAMP:20260712T083427Z
+DTSTART;VALUE=DATE:20270301
+SUMMARY:Breakthrough Energy Fellows — cycle window opens
+DESCRIPTION:VERIFY cycle + work-authorization eligibility.
+BEGIN:VALARM
+TRIGGER:-P14D
+ACTION:DISPLAY
+DESCRIPTION:Breakthrough Energy Fellows deadline approaching (~14 days)
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:pantau-5-20261201@pantau
+DTSTAMP:20260712T083427Z
+DTSTART;VALUE=DATE:20261201
+SUMMARY:IIASA / Belfer ENRP pre/postdoc — cycle window opens
+DESCRIPTION:Harvard Belfer ENRP fellowship cycle. VERIFY.
+BEGIN:VALARM
+TRIGGER:-P14D
+ACTION:DISPLAY
+DESCRIPTION:IIASA / Belfer ENRP pre/postdoc deadline approaching (~14 days)
+END:VALARM
+END:VEVENT
+END:VCALENDAR

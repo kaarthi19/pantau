@@ -1,0 +1,35 @@
+# Jobs Tier-1 orgs (polled via public ATS JSON) + non-ATS orgs (pagewatch).
+# Verification dates in SOURCES.md. Owner sets the `warmth`/priority judgement
+# and toggles `always_alert`. All tokens below were extracted from the org's
+# actual careers-page source and hit against the live public API (2026-07-12).
+
+tier1:
+  # --- VERIFIED public ATS JSON (extracted from careers-page source) --------
+  - {name: "Energy Innovation",            ats: greenhouse, slug: energyinnovation,                           tier: 1, always_alert: true,  note: "SF intermediary, direct fit"}
+  - {name: "Bezos Earth Fund",             ats: greenhouse, slug: bezosearthfund,                             tier: 1, always_alert: true,  note: "DC funder"}
+  - {name: "Quadrature Climate Foundation",ats: greenhouse, slug: qcf,                                        tier: 1, always_alert: true,  note: "funder; EU GH cluster, boards-api slug qcf works"}
+  - {name: "GEAPP",                        ats: greenhouse, slug: globalenergyallianceforpeopleandplanetgeappllc, tier: 1, always_alert: true, note: "Global Energy Alliance; Asia energy access. Careers page is /jobs/ not /careers/"}
+  - {name: "ClimateWorks Foundation",      ats: workable,   slug: "489687",                                   tier: 1, always_alert: true,  note: "5–10y destination; Workable legacy numeric account id (not a name slug)"}
+  - {name: "Clean Air Task Force",         ats: breezy,     slug: clean-air-task-force,                       tier: 1, always_alert: false, note: "Breezy public JSON feed"}
+  - {name: "Breakthrough Energy",          ats: greenhouse, slug: breakthroughenergy,                         tier: 1, always_alert: false, note: "Fellows program + roles"}
+  - {name: "Elemental Excelerator",        ats: greenhouse, slug: elementalimpact,                            tier: 1, always_alert: false, note: "slug is elementalimpact"}
+  - {name: "World Resources Institute",    ats: greenhouse, slug: wri,                                        tier: 1, always_alert: false, note: "verified endpoint, 0 postings at check time"}
+
+# Non-ATS orgs (Workday / Cornerstone / Paylocity / JazzHR / bespoke) — no clean
+# public JSON, so watched by content-hash diff. Fragile by design; page changes
+# land in the digest (a vague "page changed" item rarely scores high enough to
+# alert). All careers URLs verified reachable 2026-07-12 unless noted.
+pagewatch:
+  - {name: "RMI careers",              url: "https://rmi.org/about/careers/",                          tier: 1, always_alert: true,  note: "Workday (rockymountain.wd1); best intermediary fit"}
+  - {name: "Climate Policy Initiative careers", url: "https://www.climatepolicyinitiative.org/about-cpi/careers/", tier: 1, always_alert: true, note: "top target; custom WordPress, no ATS embed"}
+  - {name: "Hewlett Foundation careers", url: "https://hewlett.org/careers/",                          tier: 1, always_alert: false, note: "Environment program; custom WordPress"}
+  - {name: "Packard Foundation careers", url: "https://www.packard.org/about/careers/",                tier: 1, always_alert: false, note: "Cornerstone (packard.csod.com)"}
+  - {name: "Sequoia Climate Foundation careers", url: "https://sequoiaclimate.org/careers/",           tier: 1, always_alert: false, note: "links openings out to LinkedIn Jobs"}
+  - {name: "Growald Climate Fund careers", url: "https://www.growaldclimatefund.org/careers",          tier: 1, always_alert: false, note: "JazzHR via nrgconsultinggroup consultant board (shared)"}
+  - {name: "Energy Foundation careers", url: "https://www.ef.org/about-us/careers/",                   tier: 1, always_alert: false, note: "Paylocity recruiting"}
+  - {name: "LBNL — International Energy Analysis", url: "https://jobs.lbl.gov/jobs/search?keyword=energy", tier: 1, always_alert: false, note: "real portal is jobs.lbl.gov (Taleo, JS-rendered) — pagewatch is best-effort here; set a LinkedIn/Taleo email alert for reliable coverage (Phase-2 IMAP). Best technical fit: Indonesia/SEA grid work."}
+
+mdb_note: >
+  ADB / World Bank–IFC / AIIB portals have no clean public ATS JSON — cover via
+  Devex (Tier 2) or pagewatch, never ATS. World Bank short-term consultant
+  channels are rolling (registry note, not a polled source).
