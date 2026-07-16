@@ -51,14 +51,14 @@ prune:
 # research track only; the digest gets a "From your library · top N" section.
 # Only DOIs are sent to OpenAlex; the library / .bib is never committed.
 library:
-  enabled: false
+  enabled: true
   source: zotero_api           # zotero_api (auto, no manual export) | bib (local file)
   every_days: 7                # run the library sweep at most weekly
   top_n: 30                    # size of the "From your library" digest shortlist
   # zotero_api: create a READ-ONLY key at zotero.org/settings/keys, add it as the
   # ZOTERO_API_KEY secret; put your numeric userID (or a group id) below.
   zotero_library_type: user    # user | group (shared lab library)
-  zotero_library_id: SET_ME    # numeric Zotero userID (key lives in ZOTERO_API_KEY)
+  zotero_library_id: "13100523"   # numeric Zotero userID (key lives in ZOTERO_API_KEY)
   bib_path: library/zotero.bib # used only when source: bib
   discovery_days: 120
   max_authors: 15
